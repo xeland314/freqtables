@@ -1,6 +1,6 @@
 # freqtables
 
-Este paquete permite crear tables de frecuencias simples dado un conjunto de variables con sus respectivas frecuencias. Este conjunto de datos pueder una lista, tuple o un diccionario:
+Este paquete permite crear tablas de frecuencias simples dado un conjunto de variables con sus respectivas frecuencias. Este conjunto de datos pueder una lista, tuple o un diccionario:
 
 ```python
 import freqtablesimple as fts

@@ -14,7 +14,7 @@ class FreqTableSimple(object):
     Args:
         x: Variables.
         f: Frecuencias de cada cada variable.
-    Results:
+    Resultados:
         F: Frecuencias acumuladas.
         fr: Frecuencias relativas de cada variable.
         Fr: Frecuancias relativas acumuladas.
@@ -29,42 +29,41 @@ class FreqTableSimple(object):
     │ 2  │  C  │  1  │ 10  │ 0.1  │  1   │
     ╘════╧═════╧═════╧═════╧══════╧══════╛
     """
-    __tabla = {  # Template de la tabla
-        "x": [],
-        "f": [], "F": [],
-        "fr": [], "Fr": []
-    }
-    __total_frecuencias = 0
-    __cantidad_de_variables = 0
+    __total_frecuencias: float = 0
+    __cantidad_de_variables: int = 0
+    # Headers:
+    VARIABLES = "x"
+    FRECUENCIAS = "f"
+    FRECUENCIAS_RELATIVAS = "fr"
+    FRECUENCIAS_ACUMULADAS = "F"
+    FRECUENCIAS_RELATIVAS_ACUMULADAS = "Fr"
 
-    def __init__(self, datos) -> None:
-        # Verificar que haya datos en la entrada:
-        if len(datos) == 0:
+    def __init__(self, *datos, **kdatos) -> None:
+        self.__datos_brutos = Counter()
+        self.__tabla: dict = {}
+        for variable in datos:
+            if isinstance(variable, (int, float, str)):
+                self.__datos_brutos[variable] += 1
+            elif isinstance(variable, (list, tuple)):
+                for x in variable:
+                    self.__datos_brutos[x] += 1
+            elif isinstance(variable, dict):
+                self.__datos_brutos.update(variable)
+            else:
+                raise NotImplementedError()
+        for variable, valor in kdatos.items():
+            if isinstance(valor, int):
+                self.__datos_brutos[variable] += valor
+            elif isinstance(valor, float):
+                self.__datos_brutos[variable] += int(valor)
+            else:
+                raise NotImplementedError()
+        if self.__no_hay_datos_que_procesar():
             raise TablaVacía()
-        # Verificar el tipo de dato de entrda:
-        if isinstance(datos, (list, tuple)):
-            self.__inicializar_tabla_de_list(datos)
-        elif isinstance(datos, dict):
-            self.__inicializar_tabla_de_dict(datos)
-        else:
-            raise NotImplementedError()
-
-    def __inicializar_tabla_de_list(self, datos) -> None:
-        """
-        Esta función transforma una lista o tupla
-        en un Counter() iterando cada uno de sus elementos.
-        """
-        self.__datos = Counter()
-        for x in datos:
-            self.__datos[x] += 1
         self.__completar_tabla()
 
-    def __inicializar_tabla_de_dict(self, datos: dict) -> None:
-        """
-        Inicializa el Counter() con un diccionario.
-        """
-        self.__datos = Counter(datos)
-        self.__completar_tabla()
+    def __no_hay_datos_que_procesar(self) -> bool:
+        return len(self.__datos_brutos) == 0
 
     def __completar_tabla(self) -> None:
         """
@@ -72,53 +71,54 @@ class FreqTableSimple(object):
         en self.__tabla.
         """
         # Columna de variables:
-        self.__tabla["x"] = list(self.datos.keys())
+        self.__tabla[self.VARIABLES] = list(self.datos.keys())
         # Columna de frecuencias:
-        self.__tabla["f"] = list(self.datos.values())
-        # Número de datos:
-        self.__cantidad_de_variables = len(self.__tabla["x"])
-        self.__total_frecuencias = sum(self.__tabla["f"])
-        # Columna de frecuencias relativas:
-        self.__tabla["fr"] = list(map(
-            lambda x: x / self.__total_frecuencias, self.__tabla["f"]
-        ))
+        self.__tabla[self.FRECUENCIAS] = list(self.datos.values())
         # Columna de frecuencias acumuladas:
         suma_f = 0.0
-        columna_F = []
-        for frecuencia in self.__tabla["f"]:
+        frecuencias_acumuladas = []
+        for frecuencia in self.frecuencias:
             suma_f += frecuencia
-            columna_F.append(suma_f)
-        self.__tabla["F"] = columna_F
-        # Columna de frecuencias acumuladas relativas:
-        columna_Fr = []
-        columna_Fr = list(map(
-            lambda x: x / self.__total_frecuencias, self.__tabla["F"] 
+            frecuencias_acumuladas.append(suma_f)
+        self.__tabla[self.FRECUENCIAS_ACUMULADAS] = frecuencias_acumuladas
+        # Número de datos:
+        self.__cantidad_de_variables = len(self.variables)
+        self.__total_frecuencias = sum(self.frecuencias)
+        # Columna de frecuencias relativas:
+        self.__tabla[self.FRECUENCIAS_RELATIVAS] = list(map(
+            lambda x: x / self.total_frecuencias, self.frecuencias
         ))
-        self.__tabla["Fr"] = columna_Fr
+        # Columna de frecuencias acumuladas relativas:
+        frecuencias_acumuladas = []
+        frecuencias_acumuladas = list(map(
+            lambda x: x / self.total_frecuencias,
+            self.frecuencias_acumuladas 
+        ))
+        self.__tabla[self.FRECUENCIAS_RELATIVAS_ACUMULADAS] = frecuencias_acumuladas
 
     @property
-    def datos(self) -> dict:
-        return self.__datos
+    def datos(self) -> Counter:
+        return self.__datos_brutos
 
     @property
     def variables(self) -> list:
-        return self.__tabla["x"]
+        return self.__tabla[self.VARIABLES]
 
     @property
     def frecuencias(self) -> list:
-        return self.__tabla["f"]
+        return self.__tabla[self.FRECUENCIAS]
 
     @property
     def frecuencias_relativas(self) -> list:
-        return self.__tabla["fr"]
+        return self.__tabla[self.FRECUENCIAS_RELATIVAS]
 
     @property
     def frecuencias_acumuladas(self) -> list:
-        return self.__tabla["F"]
+        return self.__tabla[self.FRECUENCIAS_ACUMULADAS]
 
     @property
     def frecuencias_relativas_acumuladas(self) -> list:
-        return self.__tabla["Fr"]
+        return self.__tabla[self.FRECUENCIAS_RELATIVAS_ACUMULADAS]
 
     @property
     def cantidad_de_variables(self) -> int:
@@ -133,7 +133,6 @@ class FreqTableSimple(object):
         tabla1 = FreqTableSimple([
             'A', 'A', 'A', 'B', 'B',
             'B', 'B', 'B', 'B', 'C',
-
         ])
         print(tabla1)
 
@@ -141,10 +140,10 @@ class FreqTableSimple(object):
         return tabulate(
             self.__tabla,
             headers = "keys",
-            tablefmt="fancy_grid",
-            showindex=True,
-            stralign="center",
-            numalign="center"
+            tablefmt = "fancy_grid",
+            showindex = True,
+            stralign = "center",
+            numalign = "center"
         )
 
 if __name__ == "__main__":
