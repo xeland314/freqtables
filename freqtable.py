@@ -2,6 +2,17 @@ from tabulate import tabulate
 from math import sqrt, pow
 from intervalos import *
 
+def crear_intervalos(n, lim_inf, ancho):
+    intervalos = []
+    intervalo = IntervaloCerrado(lim_inf, lim_inf + ancho)
+    intervalos.append(intervalo)
+    lim_inf += ancho
+    for _ in range(n - 1):
+        intervalo = IntervaloSemiAbierto(lim_inf, lim_inf + ancho)
+        intervalos.append(intervalo)
+        lim_inf += ancho
+    return intervalos
+
 class FreqTable(object):
 
     # Headers
@@ -12,15 +23,14 @@ class FreqTable(object):
     FRECUENCIAS_ACUMULADAS = "F"
     FRECUENCIAS_RELATIVAS_ACUMULADAS = "Fr"
 
-    def __init__(self, rangos: list, frecuencias: list) -> None:
+    def __init__(self, intervalos: list, frecuencias: list) -> None:
         self.__tabla = {}   # Template
-        self.__tabla[self.INTERVALOS] = rangos
+        self.__completar_tabla(intervalos, frecuencias)
+    
+    def __completar_tabla(self, intervalos, frecuencias) -> None:
+        self.__tabla[self.INTERVALOS] = intervalos
         self.__calcular_puntos_medios()
         self.__tabla[self.FRECUENCIAS] = frecuencias
-        self.__completar_tabla()
-        self.__calcular_medidas_estadísticas()
-    
-    def __completar_tabla(self) -> None:
         self.__total_frecuencias = sum(self.frecuencias)
         self.__calcular_frecuencias_acumuladas()
         self.__calcular_frecuencias_relativas()
@@ -54,23 +64,6 @@ class FreqTable(object):
             sumatoria += frecuencia
             frecuencias_acumuladas.append(sumatoria)
         self.__tabla[self.FRECUENCIAS_RELATIVAS_ACUMULADAS] = frecuencias_acumuladas
-
-    def __calcular_medidas_estadísticas(self) -> None:
-        self.__calcular_media()
-        self.__calcular_varianza()
-
-    def __calcular_media(self) -> None:
-        sumatoria = 0
-        for fr, pm in zip(self.frecuencias_relativas, self.puntos_medios):
-            sumatoria += fr * pm
-        self.__media = sumatoria
-
-    def __calcular_varianza(self) -> None:
-        sumatoria = 0
-        for frecuencia, punto_medio in zip(self.frecuencias, self.puntos_medios):
-            sumatoria += frecuencia * pow(punto_medio - self.media, 2)
-        self.__varianza = sumatoria / (self.__total_frecuencias - 1)
-        self.__desviacion_estandar = sqrt(self.var)
 
     def print_resumen(self) -> None:
         info = [
@@ -116,27 +109,21 @@ class FreqTable(object):
 
     @property
     def media(self) -> float:
-        return self.__media
+        sumatoria = 0
+        for fr, pm in zip(self.frecuencias_relativas, self.puntos_medios):
+            sumatoria += fr * pm
+        return sumatoria
     
     @property
     def var(self) -> float:
-        return self.__varianza
+        sumatoria = 0
+        for frecuencia, punto_medio in zip(self.frecuencias, self.puntos_medios):
+            sumatoria += frecuencia * pow(punto_medio - self.media, 2)
+        return sumatoria / (self.__total_frecuencias - 1)
 
     @property
     def std(self) -> float:
-        return self.__desviacion_estandar
-    
-    @staticmethod
-    def crear_intervalos(lim_inf, n, ancho):
-        rangos = []
-        rango = IntervaloCerrado(lim_inf, lim_inf + float(ancho))
-        rangos.append(rango)
-        lim_inf += ancho
-        for _ in range(n - 1):
-            rango = IntervaloSemiAbierto(lim_inf, lim_inf + float(ancho))
-            rangos.append(rango)
-            lim_inf += ancho
-        return rangos
+        return sqrt(self.var)
 
     def __str__(self) -> str:
         return tabulate(
@@ -147,15 +134,3 @@ class FreqTable(object):
             stralign = "center",
             numalign = "center"
         )
-
-def main():
-    #rangos = crear_rangos(0,32,4)
-    #frecuencias = [47,32,25,20,12,5,4,5]
-    rangos = FreqTable.crear_intervalos(26.5,7,9)
-    frecuencias = [18, 8, 15, 14, 25, 21, 19]
-    tabla = FreqTable(rangos,frecuencias)
-    print(tabla)
-    tabla.print_resumen()
-
-if __name__ == "__main__":
-    main() 
