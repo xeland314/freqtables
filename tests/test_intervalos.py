@@ -54,5 +54,10 @@ class TestIntervalos(unittest.TestCase):
         self.assertNotEqual(intervalo_a2, self.intervalo_c1)
         self.assertNotEqual(intervalo_a2, self.intervalo_sa1)
 
+    def test07_eq_intervalos(self):
+        self.assertFalse(self.intervalo_a1 == self.intervalo_c1)
+        self.assertFalse(self.intervalo_a1 == self.intervalo_sa1)
+        self.assertFalse(self.intervalo_c1 == self.intervalo_sa1)
+
 if __name__ == "__main__":
     unittest.main() 

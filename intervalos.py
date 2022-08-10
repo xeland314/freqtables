@@ -2,8 +2,10 @@ from abc import ABCMeta, abstractmethod
 
 class Rango(metaclass=ABCMeta):
 
-    """Representa un rango de valores
-     como base para crear intervalos."""
+    """
+    Representa un rango de valores
+    como base para crear intervalos.
+    """
 
     def __init__(self, lim_inf, lim_sup):
         self.__lim_inf: float = lim_inf
@@ -19,7 +21,7 @@ class Rango(metaclass=ABCMeta):
 
     @property
     def punto_medio(self) -> float:
-        return (self.lim_inf + self.lim_sup)/2
+        return (self.lim_inf + self.lim_sup) / 2
 
     @property
     def ancho(self) -> float:
@@ -63,7 +65,6 @@ class IntervaloCerrado(Rango):
         return f"IntervaloCerrado({self.lim_inf}, {self.lim_sup})"
     
     def __eq__(self, other) -> bool:
-        print(type(other))
         if type(other) is IntervaloCerrado:
             return self.lim_inf == other.lim_inf and self.lim_sup == other.lim_sup
         return False
