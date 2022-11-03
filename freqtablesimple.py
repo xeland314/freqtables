@@ -1,5 +1,6 @@
 from tabulate import tabulate
 from collections import Counter
+from math import pow, sqrt
 
 class TablaVacía(Exception):
 
@@ -42,13 +43,13 @@ class FreqTableSimple(object):
         self.__datos_brutos = Counter()
         self.__tabla: dict = {}
         for variable in datos:
-            if isinstance(variable, (int, float, str)):
-                self.__datos_brutos[variable] += 1
-            elif isinstance(variable, (list, tuple)):
+            if isinstance(variable, (list, tuple)):
                 for x in variable:
                     self.__datos_brutos[x] += 1
             elif isinstance(variable, dict):
                 self.__datos_brutos.update(variable)
+            elif isinstance(variable, (int, float, str, object)):
+                self.__datos_brutos[variable] += 1
             else:
                 raise NotImplementedError()
         for variable, valor in kdatos.items():
@@ -58,12 +59,9 @@ class FreqTableSimple(object):
                 self.__datos_brutos[variable] += int(valor)
             else:
                 raise NotImplementedError()
-        if self.__no_hay_datos_que_procesar():
+        if len(self.__datos_brutos) == 0:
             raise TablaVacía()
         self.__completar_tabla()
-
-    def __no_hay_datos_que_procesar(self) -> bool:
-        return len(self.__datos_brutos) == 0
 
     def __completar_tabla(self) -> None:
         """
@@ -89,7 +87,6 @@ class FreqTableSimple(object):
             lambda x: x / self.total_frecuencias, self.frecuencias
         ))
         # Columna de frecuencias acumuladas relativas:
-        frecuencias_acumuladas = []
         frecuencias_acumuladas = list(map(
             lambda x: x / self.total_frecuencias,
             self.frecuencias_acumuladas 
@@ -127,6 +124,30 @@ class FreqTableSimple(object):
     @property
     def total_frecuencias(self) -> float:
         return self.__total_frecuencias
+
+    @property
+    def media(self) -> float:
+        if any(filter(lambda v: not isinstance(v, int, float), self.variables)):
+            return self.total_frecuencias / self.cantidad_de_variables
+        sumatoria: float = 0
+        for frecuencia, variable in zip(self.frecuencias, self.variables):
+            sumatoria += frecuencia * variable
+        return sumatoria / self.total_frecuencias
+
+    @property
+    def var(self) -> float:
+        sumatoria: float = 0
+        if any(filter(lambda v: not isinstance(v, int, float), self.variables)):
+            for frecuencia in self.frecuencias:
+                sumatoria += pow(frecuencia - self.media, 2)
+            return sumatoria / (self.cantidad_de_variables - 1)
+        for frecuencia, variable in zip(self.frecuencias, self.variables):
+            sumatoria += frecuencia * pow(variable - self.media, 2)
+        return sumatoria / (self.total_frecuencias - 1)
+
+    @property
+    def std(self) -> float:
+        return sqrt(self.var)
 
     @staticmethod
     def print_example() -> None:

@@ -4,9 +4,9 @@ from context import *
 class TestTablasDeFrecuencias(unittest.TestCase):
     
     def setUp(self):
-        intervalos1 = crear_intervalos(8, 0, 4)
+        intervalos1 = crear_lista_intervalos(8, 0, 4)
         frecuencias1 = [47, 32, 25, 20, 12, 5, 4, 5]
-        intervalos2 = crear_intervalos(7, 26.5, 9)
+        intervalos2 = crear_lista_intervalos(7, 26.5, 9)
         frecuencias2 = [18, 8, 15, 14, 25, 21, 19]
         self.tabla1 = FreqTable(intervalos1, frecuencias1)
         self.tabla2 = FreqTable(intervalos2, frecuencias2)

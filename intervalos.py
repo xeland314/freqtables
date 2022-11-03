@@ -11,6 +11,15 @@ class Rango(metaclass=ABCMeta):
         self.__lim_inf: float = lim_inf
         self.__lim_sup: float = lim_sup
 
+    def __len__(self) -> float:
+        """
+        Representa el ancho del intervalo.
+        Al igual que el propio atributo del intervalo.
+        Uso:
+        - len(intervalo) en lugar de intervalo.ancho
+        """
+        return self.lim_sup - self.lim_inf
+
     @property
     def lim_inf(self) -> float:
         return self.__lim_inf

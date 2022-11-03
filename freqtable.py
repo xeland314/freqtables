@@ -2,19 +2,28 @@ from tabulate import tabulate
 from math import sqrt, pow
 from intervalos import *
 
-def crear_intervalos(n, lim_inf, ancho):
+def crear_lista_intervalos(n: int, lim_inf: float, ancho: float) -> list:
+    """
+    Parámetros:
+        - n: Número de intervalos a crear.
+        - lim_inf: límite inferior del primer intervalo.
+        - ancho: ancho de cada clase; 
+            ancho = limite_inferior - limite_superior
+    """
     intervalos = []
-    intervalo = IntervaloCerrado(lim_inf, lim_inf + ancho)
-    intervalos.append(intervalo)
-    lim_inf += ancho
+    intervalos.append(IntervaloCerrado(lim_inf, lim_inf := lim_inf + ancho))
     for _ in range(n - 1):
-        intervalo = IntervaloSemiAbierto(lim_inf, lim_inf + ancho)
-        intervalos.append(intervalo)
-        lim_inf += ancho
+        intervalos.append(IntervaloSemiAbierto(lim_inf, lim_inf := lim_inf + ancho))
     return intervalos
 
 class FreqTable(object):
+    """
+    Tabla de frecuencias con intervalos
 
+    Parámetros:
+        - intervalos: list
+        - frecuencias: list
+    """
     # Headers
     INTERVALOS = "Intervalos"
     PUNTOS_MEDIOS = "m"
@@ -24,10 +33,7 @@ class FreqTable(object):
     FRECUENCIAS_RELATIVAS_ACUMULADAS = "Fr"
 
     def __init__(self, intervalos: list, frecuencias: list) -> None:
-        self.__tabla = {}   # Template
-        self.__completar_tabla(intervalos, frecuencias)
-    
-    def __completar_tabla(self, intervalos, frecuencias) -> None:
+        self.__tabla = {}   # { columna: lista_de_valores }
         self.__tabla[self.INTERVALOS] = intervalos
         self.__calcular_puntos_medios()
         self.__tabla[self.FRECUENCIAS] = frecuencias
@@ -37,10 +43,9 @@ class FreqTable(object):
         self.__calcular_frecuencias_relativas_acumuladas()
 
     def __calcular_puntos_medios(self) -> None:
-        puntos_medios = []
-        for intervalo in self.intervalos:
-            puntos_medios.append(intervalo.punto_medio)
-        self.__tabla[self.PUNTOS_MEDIOS] = puntos_medios
+        self.__tabla[self.PUNTOS_MEDIOS]  = list(map(
+            lambda intervalo: intervalo.punto_medio, self.intervalos
+        ))
 
     def __calcular_frecuencias_acumuladas(self) -> None:
         frecuencias_acumuladas = []
@@ -52,8 +57,7 @@ class FreqTable(object):
 
     def __calcular_frecuencias_relativas(self) -> None:
         frecuencias_relativas = list(map(
-            lambda f: f / self.__total_frecuencias,
-            self.frecuencias
+            lambda f: f / self.__total_frecuencias, self.frecuencias
         ))
         self.__tabla[self.FRECUENCIAS_RELATIVAS] = frecuencias_relativas
 
