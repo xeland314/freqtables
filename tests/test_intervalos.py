@@ -59,5 +59,11 @@ class TestIntervalos(unittest.TestCase):
         self.assertFalse(self.intervalo_a1 == self.intervalo_sa1)
         self.assertFalse(self.intervalo_c1 == self.intervalo_sa1)
 
+    def test08_len_function(self):
+        rango = 4.0
+        self.assertEqual(len(self.intervalo_a1), rango)
+        self.assertEqual(len(self.intervalo_c1), rango)
+        self.assertEqual(len(self.intervalo_sa1), rango)
+
 if __name__ == "__main__":
     unittest.main() 
