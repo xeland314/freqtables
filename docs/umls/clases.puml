@@ -1,0 +1,55 @@
+@startuml TablasDeFrecuencia
+
+skinparam groupInheritance 5
+left to right direction
+
+' Patrón estructural: Bridge
+package Columnas {
+    ' Patrón de comportamiento: Command
+    abstract class Columna <<UserList>> {
+        - tabla: TablaBase
+        + nombre: str
+        + datos: list
+        + calcular()
+    }
+    class Variables {}
+    class Intervalos {}
+    class PuntosMedios {}
+    class Frecuencias {}
+    class FrecuenciasAcumuladas {}
+    class FrecuenciasRelativas {}
+    class FrecuenciasRelativasAcumuladas {}
+    Variables --|> Columna
+    Intervalos --|> Columna
+    PuntosMedios --|> Columna
+    Frecuencias --|> Columna
+    FrecuenciasAcumuladas --|> Columna
+    FrecuenciasRelativas --|> Columna
+    FrecuenciasRelativasAcumuladas --|> Columna
+}
+
+package TablasDeFrecuencias {
+    'Patrón creacional: Prototype
+    interface MedidasEstadisticas {
+        
+    }
+    abstract class TablaBase {
+
+    }
+    class TablaSimple <<simplefreqtable>> {
+
+    }
+    class TablaNormal <<freqtable>> {
+
+    }
+    class TablaAvanzada <<advancefreqtable>> {
+
+    }
+    TablaBase .right.|> "calcular" MedidasEstadisticas
+    TablaBase *-up-> "*" Columna
+    TablaSimple -up-|> TablaBase
+    TablaNormal -up-|> TablaBase
+    TablaAvanzada -up-|> TablaNormal
+}
+
+@enduml

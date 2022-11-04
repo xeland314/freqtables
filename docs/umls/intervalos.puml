@@ -1,0 +1,32 @@
+@startuml Intervalos
+
+package Intervalos {
+    abstract class Rango {
+        + lim_inf: float
+        + lim_sup: float
+        + punto_medio: float
+        + ancho: float
+        + está_dentro_del_intervalo_el_numero(): bool
+        + __len__()
+    }
+    class IntervaloCerrado {
+        + __str__()
+        + __eq__()
+        + __repr__()
+    }
+    class IntervaloAbierto {
+        + __str__()
+        + __eq__()
+        + __repr__()
+    }
+    class IntervaloSemiAbierto {
+        + __str__()
+        + __eq__()
+        + __repr__()
+    }
+    IntervaloAbierto --|> Rango
+    IntervaloCerrado --|> Rango
+    IntervaloSemiAbierto --|> Rango
+}
+
+@enduml 
