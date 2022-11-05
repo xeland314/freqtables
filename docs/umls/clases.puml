@@ -1,16 +1,15 @@
 @startuml TablasDeFrecuencia
 
-skinparam groupInheritance 5
-left to right direction
+'skinparam groupInheritance 2
+'left to right direction
 
 ' Patrón estructural: Bridge
 package Columnas {
     ' Patrón de comportamiento: Command
-    abstract class Columna <<UserList>> {
-        - tabla: TablaBase
+    abstract class Columna {
         + nombre: str
         + datos: list
-        + calcular()
+        # inicializar_datos()
     }
     class Variables {}
     class Intervalos {}
@@ -20,12 +19,15 @@ package Columnas {
     class FrecuenciasRelativas {}
     class FrecuenciasRelativasAcumuladas {}
     Variables --|> Columna
-    Intervalos --|> Columna
+    Intervalos --|> Variables
     PuntosMedios --|> Columna
-    Frecuencias --|> Columna
+    Frecuencias --|> Variables
     FrecuenciasAcumuladas --|> Columna
     FrecuenciasRelativas --|> Columna
-    FrecuenciasRelativasAcumuladas --|> Columna
+    FrecuenciasRelativasAcumuladas --|> FrecuenciasAcumuladas
+    FrecuenciasAcumuladas *-left-> "1" Frecuencias
+    FrecuenciasRelativasAcumuladas *-left-> "1" FrecuenciasRelativas
+    PuntosMedios *-left-> "1" Intervalos
 }
 
 package TablasDeFrecuencias {
