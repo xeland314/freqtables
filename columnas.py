@@ -20,7 +20,7 @@ class ColumnaIterable:
 
 class Columna(metaclass=ABCMeta):
 
-    def __init__(self, datos_iniciales, nombre: str) -> None:
+    def __init__(self, datos_iniciales: list, nombre: str) -> None:
         self.__nombre = nombre
         self.__datos = []
         self._completar(datos_iniciales)
@@ -49,6 +49,11 @@ class Columna(metaclass=ABCMeta):
 
     def __iter__(self):
         return ColumnaIterable(self)
+
+    def __eq__(self, __columna) -> bool:
+        if type(__columna) == type(self):
+            return self.datos == __columna.datos
+        return False
 
     def __str__(self) -> str:
         return tabulate(
@@ -81,10 +86,10 @@ class Intervalos(Variables):
 class PuntosMedios(Columna):
 
     def __init__(self, intervalos: Intervalos, nombre = "m") -> None:
-        super().__init__(intervalos.datos, nombre)
+        super().__init__(intervalos, nombre)
 
-    def _completar(self, intervalos: list) -> None:
-        self.datos = list(map(lambda i: i.punto_medio, intervalos))
+    def _completar(self, intervalos) -> None:
+        self.datos = list(map(lambda intervalo: intervalo.punto_medio, intervalos))
 
 class FrecuenciasRelativas(Columna):
 
@@ -98,9 +103,9 @@ class FrecuenciasRelativas(Columna):
 class FrecuenciasAcumuladas(Columna):
 
     def __init__(self, frecuencias: Frecuencias, nombre = "F") -> None:
-        super().__init__(frecuencias.datos, nombre)
+        super().__init__(frecuencias, nombre)
 
-    def _completar(self, frecuencias: list) -> None:
+    def _completar(self, frecuencias) -> None:
         suma_temp = 0.0
         for frecuencia in frecuencias:
             suma_temp += frecuencia
@@ -116,3 +121,4 @@ if __name__ == "__main__":
     for dato in Variables([1, 2, 3, 4, 5]):
         print(dato, end=' ')
     print(FrecuenciasAcumuladas(Frecuencias([1, 2, 3, 4, 5])))
+    help(Frecuencias)

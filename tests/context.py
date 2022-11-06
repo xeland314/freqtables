@@ -3,5 +3,5 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from intervalos import *
-from freqtablesimple import *
+from columnas import *
 from freqtable import *

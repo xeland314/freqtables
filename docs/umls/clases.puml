@@ -47,9 +47,10 @@ package TablasDeFrecuencias {
     class TablaAvanzada <<advancefreqtable>> {
 
     }
-    TablaBase .right.|> "calcular" MedidasEstadisticas
     TablaBase *-up-> "*" Columna
     TablaSimple -up-|> TablaBase
+    TablaSimple .right.|> MedidasEstadisticas
+    TablaNormal .left.|> MedidasEstadisticas
     TablaNormal -up-|> TablaBase
     TablaAvanzada -up-|> TablaNormal
 }
