@@ -250,16 +250,6 @@ class FreqTable(TablaBase, MedidasEstadisticas):
             tablefmt="fancy_grid", showindex=True, stralign="right"
         ))
 
-    def __str__(self) -> str:
-        return tabulate(
-            self.__tabla,
-            headers = "keys",
-            tablefmt = "fancy_grid",
-            showindex = True,
-            stralign = "center",
-            numalign = "center"
-        )
-
 if __name__ == "__main__":
     help(FreqTableSimple)
     FreqTableSimple.print_example()
